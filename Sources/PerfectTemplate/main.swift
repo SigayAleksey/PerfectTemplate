@@ -37,6 +37,9 @@ func handler(request: HTTPRequest, response: HTTPResponse) {
 //	* Performs content compression on outgoing data when appropriate.
 var routes = Routes()
 routes.add(method: .get, uri: "/", handler: handler)
+routes.add(method: .get, uri: "/auth/login") { (request, response) in
+    response.completed()
+}
 routes.add(method: .get, uri: "/**",
 		   handler: StaticFileHandler(documentRoot: "./webroot", allowResponseFilters: true).handleRequest)
 try HTTPServer.launch(name: "localhost",
