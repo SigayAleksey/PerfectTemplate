@@ -6,3 +6,13 @@
 //
 
 import Foundation
+
+struct LogoutRequest {
+    var id_user: Int = 0
+    
+    init(_ json: [String: AnyObject]) {
+        if let id_user = json["id_user"] as? Int {
+            self.id_user = id_user
+        }
+    }
+}
