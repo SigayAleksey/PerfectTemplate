@@ -62,8 +62,8 @@ Carthage/Build
 fastlane/report.xml
 fastlane/screenshots
 
-Packages/
-PerfectTemplate.xcodeproj
+# Packages/
+# PerfectTemplate.xcodeproj
 Tests/
 webroot/
 Package.pins
