@@ -21,34 +21,37 @@ import PerfectHTTP
 import PerfectHTTPServer
 import Foundation
 
+let authController = AuthController()
+var routes = Routes()
+
 func handler(request: HTTPRequest, response: HTTPResponse) {
 	response.setHeader(.contentType, value: "text/html")
 	response.appendBody(string: "<html><title>Registration</title><body>Registration</body></html>")
 	response.completed()
 }
-let server = HTTPServer()
-let authController = AuthController()
-var routes = Routes()
 
-routes.add(method: .post, uri: "/register", handler: authController.register)
+routes.add(method: .get, uri: "/registeruser", handler: authController.register)
 routes.add(method: .get, uri: "/login", handler: authController.login)
 
-server.addRoutes(routes)
-server.serverPort = 8080
-
 do {
-    try server.start()
+    try HTTPServer.launch(name: "localhost",
+                          port: 8181,
+                          routes: routes,
+                          responseFilters: [
+                            (PerfectHTTPServer.HTTPFilter.contentCompression(data: [:]), HTTPFilterPriority.high)])
 } catch {
     fatalError("Network error - \(error)")
 }
 
-
-//routes.add(method: .get, uri: "/", handler: handler)
-//routes.add(method: .get, uri: "/**",
-//           handler: StaticFileHandler(documentRoot: "./webroot", allowResponseFilters: true).handleRequest)
-//try HTTPServer.launch(name: "localhost",
-//                      port: 8181,
-//                      routes: routes,
-//                      responseFilters: [
-//                        (PerfectHTTPServer.HTTPFilter.contentCompression(data: [:]), HTTPFilterPriority.high)])
-
+// При ответе с ошибкой
+func returnError(errorMessage: String, response: HTTPResponse) -> Void {
+    do {
+        try response.setBody(json: [
+            "result": 0,
+            "errorMessage": errorMessage
+            ])
+            .completed()
+    } catch {
+        response.completed(status: HTTPResponseStatus.custom(code: 500, message: "Parse data error - \(error)"))
+    }
+}
